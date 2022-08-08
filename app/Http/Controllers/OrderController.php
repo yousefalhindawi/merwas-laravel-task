@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 // use Illuminate\Support\Facades\Request;
 // use App\Http\Requests\StoreOrderRequest;
@@ -43,6 +44,13 @@ class OrderController extends Controller
     {
         //POST
         try {
+            $validator = Validator::make($request->all(), [
+                'address' => 'required',
+                'phone' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['validation_errors'=>$validator->errors(),'status'=> 401]);
+            }
         //  return Auth::user()->id;
          $allCart = Cart::where('user_id',Auth::user()->id)->join('products', 'carts.product_id', '=', 'products.id')->get(['products.product_price', 'carts.*']);
         //   return ($allCart);
